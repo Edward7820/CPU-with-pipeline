@@ -1,6 +1,7 @@
 module IDEXRegisters
 (
     clk_i,
+    rst_i,
     RegWrite_i,
     MemtoReg_i,
     MemRead_i,
@@ -24,6 +25,7 @@ module IDEXRegisters
 );
 
     input clk_i;
+    input rst_i;
     input[2:0] ALUOp_i;
     input ALUSrc_i;
     input RegWrite_i;
@@ -67,17 +69,31 @@ module IDEXRegisters
     assign Imm_o = Imm_reg;
     assign Op_o = Op_reg;
 
-    always@(posedge clk_i) begin
-        ALUSrc_reg <= ALUSrc_i;
-        RegWrite_reg <= RegWrite_i;
-        MemtoReg_reg <= MemtoReg_i;
-        MemRead_reg <= MemRead_i;
-        MemWrite_reg <= MemWrite_i;
-        ALUOp_reg <= ALUOp_i;
-        RS1data_reg <= RS1data_i;
-        RS2data_reg <= RS2data_i;
-        Imm_reg <= Imm_i;
-        Op_reg <= Op_i;
+    always@(posedge clk_i or posedge rst_i) begin
+        if (rst_i) begin
+            ALUSrc_reg <= 1'b0;
+            RegWrite_reg <= 1'b0;
+            MemtoReg_reg <= 1'b0;
+            MemRead_reg <= 1'b0;
+            MemWrite_reg <= 1'b0;
+            ALUOp_reg <= 3'b0;
+            RS1data_reg <= 32'b0;
+            RS2data_reg <= 32'b0;
+            Imm_reg <= 32'b0;
+            Op_reg <= 32'b0;
+        end
+        else begin
+            ALUSrc_reg <= ALUSrc_i;
+            RegWrite_reg <= RegWrite_i;
+            MemtoReg_reg <= MemtoReg_i;
+            MemRead_reg <= MemRead_i;
+            MemWrite_reg <= MemWrite_i;
+            ALUOp_reg <= ALUOp_i;
+            RS1data_reg <= RS1data_i;
+            RS2data_reg <= RS2data_i;
+            Imm_reg <= Imm_i;
+            Op_reg <= Op_i;
+        end
     end
 
 endmodule

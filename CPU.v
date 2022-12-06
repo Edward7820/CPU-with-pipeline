@@ -87,6 +87,7 @@ module CPU
 
     IFIDRegisters IFIDRegisters(
         .clk_i(clk_i),
+        .rst_i(rst_i),
         .Op_i(IF_instruction),
         .Op_o(ID_instruction)
     );
@@ -119,6 +120,7 @@ module CPU
 
     IDEXRegisters IDEXRegisters(
         .clk_i(clk_i),
+        .rst_i(rst_i),
         .RegWrite_i(ID_RegWrite),
         .MemtoReg_i(ID_MemtoReg),
         .MemRead_i(ID_MemRead),
@@ -191,6 +193,7 @@ module CPU
 
     EXMEMRegisters EXMEMRegisters(
         .clk_i(clk_i),
+        .rst_i(rst_i),
         .RegWrite_i(EX_RegWrite),
         .MemtoReg_i(EX_MemtoReg),
         .MemRead_i(EX_MemRead),
@@ -218,6 +221,7 @@ module CPU
 
     MEMWBRegisters MEMWBRegisters(
         .clk_i(clk_i),
+        .rst_i(rst_i),
         .RegWrite_i(MEM_RegWrite),
         .MemtoReg_i(MEM_MemtoReg),
         .ALUResult_i(MEM_ALUresult),

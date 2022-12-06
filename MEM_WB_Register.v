@@ -1,6 +1,7 @@
 module MEMWBRegisters
 (
     clk_i,
+    rst_i,
     RegWrite_i,
     MemtoReg_i,
     ALUResult_i,
@@ -14,6 +15,7 @@ module MEMWBRegisters
 );
 
     input clk_i;
+    input rst_i;
     input RegWrite_i;
     input MemtoReg_i;
     input[31:0] ALUResult_i;
@@ -37,12 +39,21 @@ module MEMWBRegisters
     assign Memdata_o = Memdata_reg;
     assign RDaddr_o = RDaddr_reg;
 
-    always@(posedge clk_i) begin
-        RegWrite_reg <= RegWrite_i;
-        MemtoReg_reg <= MemtoReg_i;
-        ALUResult_reg <= ALUResult_i;
-        Memdata_reg <= Memdata_i;
-        RDaddr_reg <= RDaddr_i; 
+    always@(posedge clk_i or posedge rst_i) begin
+        if (rst_i) begin
+            RegWrite_reg <= 1'b0;
+            MemtoReg_reg <= 1'b0;
+            ALUResult_reg <= 32'b0;
+            Memdata_reg <= 32'b0;
+            RDaddr_reg <= 5'b0; 
+        end
+        else begin
+            RegWrite_reg <= RegWrite_i;
+            MemtoReg_reg <= MemtoReg_i;
+            ALUResult_reg <= ALUResult_i;
+            Memdata_reg <= Memdata_i;
+            RDaddr_reg <= RDaddr_i;
+        end 
     end
 
 endmodule

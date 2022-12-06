@@ -1,6 +1,7 @@
 module EXMEMRegisters
 (
     clk_i,
+    rst_i,
     RegWrite_i,
     MemtoReg_i,
     MemRead_i,
@@ -18,6 +19,7 @@ module EXMEMRegisters
 );
 
     input clk_i;
+    input rst_i;
     input RegWrite_i;
     input MemtoReg_i;
     input MemRead_i;
@@ -49,14 +51,25 @@ module EXMEMRegisters
     assign RS2data_o = RS2data_reg;
     assign RDaddr_o = RDaddr_reg;
 
-    always@(posedge clk_i) begin
-        RegWrite_reg <= RegWrite_i;
-        MemtoReg_reg <= MemtoReg_i;
-        MemRead_reg <= MemRead_i;
-        MemWrite_reg <= MemWrite_i;
-        ALUResult_reg <= ALUResult_i;
-        RS2data_reg <= RS2data_i;
-        RDaddr_reg <= RDaddr_i;
+    always@(posedge clk_i or posedge rst_i) begin
+        if (rst_i) begin
+            RegWrite_reg <= 1'b0;
+            MemtoReg_reg <= 1'b0;
+            MemRead_reg <= 1'b0;
+            MemWrite_reg <= 1'b0;
+            ALUResult_reg <= 32'b0;
+            RS2data_reg <= 32'b0;
+            RDaddr_reg <= 5'b0;
+        end
+        else begin
+            RegWrite_reg <= RegWrite_i;
+            MemtoReg_reg <= MemtoReg_i;
+            MemRead_reg <= MemRead_i;
+            MemWrite_reg <= MemWrite_i;
+            ALUResult_reg <= ALUResult_i;
+            RS2data_reg <= RS2data_i;
+            RDaddr_reg <= RDaddr_i;
+        end
     end
 
 endmodule
