@@ -53,9 +53,9 @@ module CPU
     wire MEM_MemWrite;
     wire MEM_RegWrite;
     wire MEM_MemtoReg;
-    wire[31:0] MEM_memdata;
+    wire[31:0] MEM_memreaddata;
     //WB stage
-    wire[31:0] WB_memdata;
+    wire[31:0] WB_memreaddata;
     wire[31:0] WB_ALUresult;
     wire[4:0] WB_rdaddr;
     wire WB_RegWrite;
@@ -103,9 +103,9 @@ module CPU
         .clk_i(clk_i),
         .RS1addr_i(ID_instruction[19:15]),
         .RS2addr_i(ID_instruction[24:20]),
-        .RDaddr_i(), 
-        .RDdata_i(),
-        .RegWrite_i(), 
+        .RDaddr_i(WB_rdaddr), 
+        .RDdata_i(WB_writedata),
+        .RegWrite_i(WB_RegWrite), 
         .RS1data_o(ID_rs1data), 
         .RS2data_o(ID_rs2data) 
     );
@@ -203,6 +203,36 @@ module CPU
         .ALUResult_o(MEM_ALUresult),
         .RS2data_o(MEM_memwritedata),
         .RDaddr_o(MEM_rdaddr)
+    );
+
+    Data_Memory Data_Memory(
+        .clk_i(clk_i), 
+        .addr_i(MEM_ALUresult), 
+        .MemRead_i(MEM_MemRead),
+        .MemWrite_i(MEM_MemWrite),
+        .data_i(MEM_memwritedata),
+        .data_o(MEM_memreaddata)
+    );
+
+    MEMWBRegisters MEMWBRegisters(
+        .clk_i(clk_i),
+        .RegWrite_i(MEM_RegWrite),
+        .MemtoReg_i(MEM_MemtoReg),
+        .ALUResult_i(MEM_ALUresult),
+        .Memdata_i(MEM_memreaddata),
+        .RDaddr_i(MEM_rdaddr),
+        .RegWrite_o(WB_RegWrite),
+        .MemtoReg_o(WB_MemtoReg),
+        .ALUResult_o(WB_ALUresult),
+        .Memdata_o(WB_memreaddata),
+        .RDaddr_o(WB_rdaddr)
+    );
+
+    WriteBachDataMUX MUX2(
+        data1_i(WB_ALUresult),
+        data2_i(WB_memreaddata),
+        select_i(WB_MemtoReg),
+        data_o(WB_writedata)
     );
 
 endmodule

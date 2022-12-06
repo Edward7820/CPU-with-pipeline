@@ -3,8 +3,14 @@ module MEMWBRegisters
     clk_i,
     RegWrite_i,
     MemtoReg_i,
+    ALUResult_i,
+    Memdata_i,
+    RDaddr_i,
     RegWrite_o,
-    MemtoReg_o
+    MemtoReg_o,
+    ALUResult_o,
+    Memdata_o,
+    RDaddr_o
 );
 
     input clk_i;
