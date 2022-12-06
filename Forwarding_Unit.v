@@ -27,11 +27,17 @@ module ForwardingUnit(
         else if (WBRegWrite_i && (WBrd_i!=0) && (WBrd_i==EXrs1_i)) begin
             ForwardA_reg <= 2'b01;
         end
+        else begin
+            ForwardA_reg <= 2'b00;
+        end
         if (MEMRegWrite_i && (MEMrd_i!=0) && (MEMrd_i==EXrs2_i)) begin
             ForwardB_reg <= 2'b10;
         end
         else if (WBRegWrite_i && (WBrd_i!=0) && (WBrd_i==EXrs2_i)) begin
             ForwardB_reg <= 2'b01;
+        end
+        else begin
+            ForwardB_reg <= 2'b00;
         end 
     end
     assign ForwardA_o = ForwardA_reg;
