@@ -56,6 +56,29 @@ initial begin
     CPU.Registers.register[31] = 62;
 
     // TODO: initialize your pipeline registers
+    CPU.IFIDRegisters.Op_reg <= {32{1'b0}};
+    CPU.IDEXRegisters.ALUSrc_reg <= 1'b0;
+    CPU.IDEXRegisters.RegWrite_reg <= 1'b0;
+    CPU.IDEXRegisters.MemtoReg_reg <= 1'b0;
+    CPU.IDEXRegisters.MemRead_reg <= 1'b0;
+    CPU.IDEXRegisters.MemWrite_reg <= 1'b0;
+    CPU.IDEXRegisters.ALUOp_reg <= 3'b000;
+    CPU.IDEXRegisters.RS1data_reg <= {32{1'b0}};
+    CPU.IDEXRegisters.RS2data_reg <= {32{1'b0}};
+    CPU.IDEXRegisters.Op_reg <= {32{1'b0}};
+    CPU.IDEXRegisters.Imm_reg <= {32{1'b0}};
+    CPU.EXMEMRegisters.RegWrite_reg <= 1'b0;
+    CPU.EXMEMRegisters.MemtoReg_reg <= 1'b0;
+    CPU.EXMEMRegisters.MemRead_reg <= 1'b0;
+    CPU.EXMEMRegisters.MemWrite_reg <= 1'b0;
+    CPU.EXMEMRegisters.ALUResult_reg <= {32{1'b0}};
+    CPU.EXMEMRegisters.RS2data_reg <= {32{1'b0}};
+    CPU.EXMEMRegisters.RDaddr_reg <= 5'b00000;
+    CPU.MEMWBRegisters.RegWrite_reg <= 1'b0;
+    CPU.MEMWBRegisters.MemtoReg_reg <= 1'b0;
+    CPU.MEMWBRegisters.ALUResult_reg <= {32{1'b0}};
+    CPU.MEMWBRegisters.Memdata_reg <= {32{1'b0}};
+    CPU.MEMWBRegisters.RDaddr_reg <= 5'b00000; 
     
     // Load instructions into instruction memory
     // Make sure you change back to "instruction.txt" before submission
@@ -81,8 +104,8 @@ always@(posedge Clk) begin
         $finish;
 
     // put in your own signal to count stall and flush
-    if(CPU.Hazard_Detection.Stall_o == 1 && CPU.Control.Branch_o == 0)stall = stall + 1;
-    if(CPU.Flush == 1)flush = flush + 1;  
+    // if(CPU.Hazard_Detection.Stall_o == 1 && CPU.Control.Branch_o == 0)stall = stall + 1;
+    // if(CPU.Flush == 1)flush = flush + 1;  
 
     // print PC
     // DO NOT CHANGE THE OUTPUT FORMAT

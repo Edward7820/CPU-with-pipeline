@@ -31,14 +31,6 @@ module MEMWBRegisters
     reg[31:0] Memdata_reg;
     reg[4:0] RDaddr_reg;
 
-    initial begin
-        RegWrite_reg <= 1'b0;
-        MemtoReg_reg <= 1'b0;
-        ALUResult_reg <= {32{1'b0}};
-        Memdata_reg <= {32{1'b0}};
-        RDaddr_reg <= 5'b00000;
-    end
-
     assign RegWrite_o = RegWrite_reg;
     assign MemtoReg_o = MemtoReg_reg;
     assign ALUresult_o = ALUResult_reg;

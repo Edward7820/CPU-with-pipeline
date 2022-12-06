@@ -41,16 +41,6 @@ module EXMEMRegisters
     reg[31:0] RS2data_reg;
     reg[4:0] RDaddr_reg;
 
-    initial begin
-        RegWrite_reg <= 1'b0;
-        MemtoReg_reg <= 1'b0;
-        MemRead_reg <= 1'b0;
-        MemWrite_reg <= 1'b0;
-        ALUResult_reg <= {32{1'b0}};
-        RS2data_reg <= {32{1'b0}};
-        RDaddr_reg <= 5'b00000;
-    end
-
     assign RegWrite_o = RegWrite_reg;
     assign MemtoReg_o = MemtoReg_reg;
     assign MemRead_o = MemRead_reg;

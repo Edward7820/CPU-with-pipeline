@@ -12,7 +12,7 @@ module CPU
 
     //IF stage
     wire[31:0] old_pc;
-    wire[31:0] next_pc;
+    wire[31:0] new_pc;
     wire[31:0] four;
     wire[31:0] IF_instruction;
     //ID stage
@@ -69,8 +69,8 @@ module CPU
         .rst_i(rst_i),
         .start_i(start_i),
         .pc_i(old_pc),
-        .pc_o(new_pc),
-    )
+        .pc_o(new_pc)
+    );
 
     Adder Add_PC(
         .data1_in(new_pc),
@@ -121,7 +121,7 @@ module CPU
         .MemtoReg_i(ID_MemtoReg),
         .MemRead_i(ID_MemRead),
         .MemWrite_i(ID_MemWrite),
-        .ALUOp_i(ID_ALUoP),
+        .ALUOp_i(ID_ALUOp),
         .ALUSrc_i(ID_ALUSrc),
         .RS1data_i(ID_rs1data),
         .RS2data_i(ID_rs2data),
@@ -228,11 +228,11 @@ module CPU
         .RDaddr_o(WB_rdaddr)
     );
 
-    WriteBachDataMUX MUX2(
-        data1_i(WB_ALUresult),
-        data2_i(WB_memreaddata),
-        select_i(WB_MemtoReg),
-        data_o(WB_writedata)
+    MUX2 WriteBachDataMUX(
+        .data1_i(WB_ALUresult),
+        .data2_i(WB_memreaddata),
+        .select_i(WB_MemtoReg),
+        .data_o(WB_writedata)
     );
 
 endmodule

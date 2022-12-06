@@ -56,19 +56,6 @@ module IDEXRegisters
     reg[31:0] Op_reg;
     reg[31:0] Imm_reg;
 
-    initial begin
-        ALUSrc_reg <= 1'b0;
-        RegWrite_reg <= 1'b0;
-        MemtoReg_reg <= 1'b0;
-        MemRead_reg <= 1'b0;
-        MemWrite_reg <= 1'b0;
-        ALUOp_reg <= 3'b000;
-        RS1data_reg <= {32{1'b0}};
-        RS2data_reg <= {32{1'b0}};
-        Op_reg <= {32{1'b0}};
-        Imm_reg <= {32{1'b0}};
-    end
-
     assign ALUSrc_o = ALUSrc_reg;
     assign RegWrite_o = RegWrite_reg;
     assign MemtoReg_o = MemtoReg_reg;
