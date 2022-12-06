@@ -32,56 +32,66 @@ module Control
     reg[2:0] ALUOp_reg;
     always @(*) 
     begin
-        case(Op_i[6:4])
-            3'b011: begin
-                ALUSrc_reg <= 0;
-                RegWrite_reg <= 1;
-                MemtoReg_reg <= 0;
-                MemRead_reg <= 0;
-                MemWrite_reg <= 0;
-                if(Op_i[30]) begin
-                    ALUOp_reg <= `SUB;
+        if(Op_i[6:0] == 7'b0) begin
+            ALUSrc_reg <= 0;
+            RegWrite_reg <= 0;
+            MemtoReg_reg <= 0;
+            MemRead_reg <= 0;
+            MemWrite_reg <= 0;
+            ALUOp_reg <= 3'b0;
+        end
+        else begin
+            case(Op_i[6:4])
+                3'b011: begin
+                    ALUSrc_reg <= 0;
+                    RegWrite_reg <= 1;
+                    MemtoReg_reg <= 0;
+                    MemRead_reg <= 0;
+                    MemWrite_reg <= 0;
+                    if(Op_i[30]) begin
+                        ALUOp_reg <= `SUB;
+                    end
+                    else if (Op_i[25]) begin
+                        ALUOp_reg <= `MUL;
+                    end
+                    else begin
+                        ALUOp_reg <= Op_i[14:12];
+                    end
                 end
-                else if (Op_i[25]) begin
-                    ALUOp_reg <= `MUL;
-                end
-                else begin
+                3'b001: begin
+                    ALUSrc_reg <= 1;
+                    RegWrite_reg <= 1;
+                    MemtoReg_reg <= 0;
+                    MemRead_reg <= 0;
+                    MemWrite_reg <= 0;
                     ALUOp_reg <= Op_i[14:12];
                 end
-            end
-            3'b001: begin
-                ALUSrc_reg <= 1;
-                RegWrite_reg <= 1;
-                MemtoReg_reg <= 0;
-                MemRead_reg <= 0;
-                MemWrite_reg <= 0;
-                ALUOp_reg <= Op_i[14:12];
-            end
-            3'b000: begin
-                ALUSrc_reg <= 1;
-                RegWrite_reg <= 1;
-                MemtoReg_reg <= 1;
-                MemRead_reg <= 1;
-                MemWrite_reg <= 0;
-                ALUOp_reg <= `ADD;
-            end
-            3'b010: begin
-                ALUSrc_reg <= 1;
-                RegWrite_reg <= 0;
-                MemtoReg_reg <= 0;
-                MemRead_reg <= 0;
-                MemWrite_reg <= 1;
-                ALUOp_reg <= `ADD;
-            end
-            3'b110: begin
-                ALUSrc_reg <= 0;
-                RegWrite_reg <= 0;
-                MemtoReg_reg <= 0;
-                MemRead_reg <= 0;
-                MemWrite_reg <= 0;
-                ALUOp_reg <= `SUB;
-            end
-        endcase
+                3'b000: begin
+                    ALUSrc_reg <= 1;
+                    RegWrite_reg <= 1;
+                    MemtoReg_reg <= 1;
+                    MemRead_reg <= 1;
+                    MemWrite_reg <= 0;
+                    ALUOp_reg <= `ADD;
+                end
+                3'b010: begin
+                    ALUSrc_reg <= 1;
+                    RegWrite_reg <= 0;
+                    MemtoReg_reg <= 0;
+                    MemRead_reg <= 0;
+                    MemWrite_reg <= 1;
+                    ALUOp_reg <= `ADD;
+                end
+                3'b110: begin
+                    ALUSrc_reg <= 0;
+                    RegWrite_reg <= 0;
+                    MemtoReg_reg <= 0;
+                    MemRead_reg <= 0;
+                    MemWrite_reg <= 0;
+                    ALUOp_reg <= `SUB;
+                end
+            endcase
+        end
     end
     assign ALUSrc_o = ALUSrc_reg;
     assign RegWrite_o = RegWrite_reg;
