@@ -33,7 +33,7 @@ module MEMWBRegisters
 
     assign RegWrite_o = RegWrite_reg;
     assign MemtoReg_o = MemtoReg_reg;
-    assign ALUresult_o = ALUResult_reg;
+    assign ALUResult_o = ALUResult_reg;
     assign Memdata_o = Memdata_reg;
     assign RDaddr_o = RDaddr_reg;
 

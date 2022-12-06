@@ -14,6 +14,7 @@ module CPU
     wire[31:0] old_pc;
     wire[31:0] new_pc;
     wire[31:0] four;
+    wire pc_write;
     wire[31:0] IF_instruction;
     //ID stage
     wire[31:0] ID_instruction;
@@ -62,12 +63,13 @@ module CPU
     wire WB_MemtoReg;
     wire[31:0] WB_writedata;
 
-
+    assign pc_write = 1'b1;
     assign four = 32'd4;
     PC PC(
         .clk_i(clk_i),
         .rst_i(rst_i),
         .start_i(start_i),
+        .PCWrite_i(pc_write),
         .pc_i(old_pc),
         .pc_o(new_pc)
     );
