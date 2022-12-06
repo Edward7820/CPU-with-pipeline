@@ -39,9 +39,15 @@ module CPU
     wire[31:0] EX_Imm;
     wire[1:0] ForwardA;
     wire[1:0] ForwardB;
+    wire[31:0] srcdata1; //after forwarding
+    wire[31:0] srcdata2; //after forwarding
+    wire[31:0] EX_memwritedata; //after forwarding
+    wire[31:0] ALUsrcdata1;
+    wire[31:0] ALUsrcdata2;
+    wire[31:0] EX_ALUresult;
     //MEM stage
     wire[31:0] MEM_ALUresult;
-    wire[31:0] MEM_rs2data;
+    wire[31:0] MEM_memwritedata;
     wire[4:0] MEM_rdaddr;
     wire MEM_MemRead;
     wire MEM_MemWrite;
@@ -54,6 +60,7 @@ module CPU
     wire[4:0] WB_rdaddr;
     wire WB_RegWrite;
     wire WB_MemtoReg;
+    wire[31:0] WB_writedata;
 
 
     assign four = 32'd4;
@@ -141,6 +148,61 @@ module CPU
         .WBrd_i(WB_rdaddr),
         .ForwardA_o(ForwardA),
         .ForwardB_o(ForwardB)
+    );
+
+    wire[31:0] tmp;
+    assign tmp = 32'd0;
+    MUX4 MUXA(
+        .data1_i(EX_rs1data),
+        .data2_i(WB_writedata),
+        .data3_i(MEM_ALUresult),
+        .data4_i(tmp),
+        .select_i(ForwardA),
+        .data_o(srcdata1)
+    );
+
+    MUX4 MUXB(
+        .data1_i(EX_rs2data),
+        .data2_i(WB_writedata),
+        .data3_i(MEM_ALUresult),
+        .data4_i(tmp),
+        .select_i(ForwardB),
+        .data_o(srcdata2)
+    );
+
+    MUX2 MUX_ALUSrc2(
+        .data1_i(srcdata2),
+        .data2_i(EX_Imm),
+        .select_i(EX_ALUSrc),
+        .data_o(ALUsrcdata2)
+    );
+
+    assign ALUsrcdata1 = srcdata1;
+    assign EX_memwritedata = srcdata2;
+
+    ALU ALU(
+        .data1_i(ALUsrcdata1),
+        .data2_i(ALUsrcdata2),
+        .ALUCtrl_i(EX_ALUOp),
+        .data_o(EX_ALUresult)
+    );
+
+    EXMEMRegisters EXMEMRegisters(
+        .clk_i(clk_i),
+        .RegWrite_i(EX_RegWrite),
+        .MemtoReg_i(EX_MemtoReg),
+        .MemRead_i(EX_MemRead),
+        .MemWrite_i(EX_MemWrite),
+        .ALUResult_i(EX_ALUresult),
+        .RS2data_i(EX_memwritedata),
+        .RDaddr_i(EX_instruction[11:7]),
+        .RegWrite_o(MEM_RegWrite),
+        .MemtoReg_o(MEM_MemtoReg),
+        .MemRead_o(MEM_MemRead),
+        .MemWrite_o(MEM_MemWrite),
+        .ALUResult_o(MEM_ALUresult),
+        .RS2data_o(MEM_memwritedata),
+        .RDaddr_o(MEM_rdaddr)
     );
 
 endmodule
