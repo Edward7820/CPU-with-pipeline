@@ -125,7 +125,7 @@ module CPU
 
     HazardDetectionUnit HazardDetectionUnit(
         .MemRead_i(EX_MemRead),
-        .ALUSrc_i(EX_ALUSrc),
+        .ALUSrc_i(ID_ALUSrc),
         .RDaddr_i(EX_instruction[11:7]),
         .RS1addr_i(ID_instruction[19:15]),
         .RS2addr_i(ID_instruction[24:20]),
