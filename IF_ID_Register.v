@@ -3,12 +3,16 @@ module IFIDRegisters
     clk_i,
     rst_i,
     Op_i,
+    Stall_i,
+    Flush_i,
     Op_o 
 );
 
     input clk_i;
     input rst_i;
     input[31:0] Op_i;
+    input Stall_i;
+    input Flush_i;
     output[31:0] Op_o;
     reg[31:0] Op_reg;
 
@@ -17,8 +21,13 @@ module IFIDRegisters
         if (rst_i) begin
             Op_reg <= {32{1'b0}};
         end
-        else begin
-            Op_reg <= Op_i;
+        else if (Stall_i != 0) begin
+            if (Flush_i) begin
+                Op_reg <= {32{1'b0}};
+            end
+            else begin
+                Op_reg <= Op_i;
+            end
         end
     end
 

@@ -8,21 +8,25 @@
 module Control
 (
     Op_i,
+    NoOp_i,
     ALUOp_o,
     ALUSrc_o,
     RegWrite_o,
     MemtoReg_o,
     MemRead_o,
-    MemWrite_o
+    MemWrite_o,
+    Branch_o
 );
 
     input[31:0] Op_i;
+    input NoOp_i;
     output[2:0] ALUOp_o;
     output ALUSrc_o;
     output RegWrite_o;
     output MemtoReg_o;
     output MemRead_o;
     output MemWrite_o;
+    output Branch_o;
 
     reg ALUSrc_reg;
     reg RegWrite_reg;
@@ -30,15 +34,26 @@ module Control
     reg MemRead_reg;
     reg MemWrite_reg;
     reg[2:0] ALUOp_reg;
+    reg Branch_reg;
     always @(*) 
     begin
-        if(Op_i[6:0] == 7'b0) begin
+        if(NoOp_i) begin
             ALUSrc_reg <= 0;
             RegWrite_reg <= 0;
             MemtoReg_reg <= 0;
             MemRead_reg <= 0;
             MemWrite_reg <= 0;
             ALUOp_reg <= 3'b0;
+            Branch_reg <= 0;
+        end
+        else if(Op_i[6:0] == 7'b0) begin
+            ALUSrc_reg <= 0;
+            RegWrite_reg <= 0;
+            MemtoReg_reg <= 0;
+            MemRead_reg <= 0;
+            MemWrite_reg <= 0;
+            ALUOp_reg <= 3'b0;
+            Branch_reg <= 0;
         end
         else begin
             case(Op_i[6:4])
@@ -48,6 +63,7 @@ module Control
                     MemtoReg_reg <= 0;
                     MemRead_reg <= 0;
                     MemWrite_reg <= 0;
+                    Branch_reg <= 0;
                     if(Op_i[30]) begin
                         ALUOp_reg <= `SUB;
                     end
@@ -65,6 +81,7 @@ module Control
                     MemRead_reg <= 0;
                     MemWrite_reg <= 0;
                     ALUOp_reg <= Op_i[14:12];
+                    Branch_reg <= 0;
                 end
                 3'b000: begin
                     ALUSrc_reg <= 1;
@@ -73,6 +90,7 @@ module Control
                     MemRead_reg <= 1;
                     MemWrite_reg <= 0;
                     ALUOp_reg <= `ADD;
+                    Branch_reg <= 0;
                 end
                 3'b010: begin
                     ALUSrc_reg <= 1;
@@ -81,6 +99,7 @@ module Control
                     MemRead_reg <= 0;
                     MemWrite_reg <= 1;
                     ALUOp_reg <= `ADD;
+                    Branch_reg <= 0;
                 end
                 3'b110: begin
                     ALUSrc_reg <= 0;
@@ -89,6 +108,7 @@ module Control
                     MemRead_reg <= 0;
                     MemWrite_reg <= 0;
                     ALUOp_reg <= `SUB;
+                    Branch_reg <= 1;
                 end
             endcase
         end
@@ -99,6 +119,6 @@ module Control
     assign MemRead_o = MemRead_reg;
     assign MemWrite_o = MemWrite_reg;
     assign ALUOp_o = ALUOp_reg;
-
+    assign Branch_o = Branch_reg;
 
 endmodule
