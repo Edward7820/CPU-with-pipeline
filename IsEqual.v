@@ -2,7 +2,7 @@ module IsEqual(
     data1_i,
     data2_i,
     result_o
-)
+);
     input[31:0] data1_i;
     input[31:0] data2_i;
     output result_o;

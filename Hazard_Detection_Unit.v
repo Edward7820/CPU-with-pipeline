@@ -1,6 +1,7 @@
 module HazardDetectionUnit
 (
     MemRead_i,
+    ALUSrc_i,
     RDaddr_i,
     RS1addr_i,
     RS2addr_i,
@@ -9,6 +10,7 @@ module HazardDetectionUnit
     NoOp_o,
 );
     input MemRead_i;
+    input ALUSrc_i;
     input[4:0] RDaddr_i;
     input[4:0] RS1addr_i;
     input[4:0] RS2addr_i;
@@ -30,7 +32,7 @@ module HazardDetectionUnit
                 Stall_reg <= 1;
                 NoOp_reg <= 1;
             end
-            else if (RDaddr_i == RS2addr_i) begin
+            else if (RDaddr_i == RS2addr_i && ALUSrc_i == 0) begin
                 PCWrite_reg <= 0;
                 Stall_reg <= 1;
                 NoOp_reg <= 1;

@@ -11,8 +11,9 @@ module CPU
     input start_i;
 
     //IF stage
-    wire[31:0] old_pc;
-    wire[31:0] new_pc;
+    wire[31:0] next_pc;
+    wire[31:0] pc_plus_four;
+    wire[31:0] IF_pc;
     wire[31:0] four;
     wire pc_write;
     wire[31:0] IF_instruction;
@@ -27,6 +28,14 @@ module CPU
     wire[31:0] ID_rs1data;
     wire[31:0] ID_rs2data;
     wire[31:0] ID_Imm;
+    wire NoOp;
+    wire Stall;
+    wire Branch_Control;
+    wire Compare;
+    wire Flush;
+    wire[31:0] ID_pc;
+    wire[31:0] Branch_pc;
+    wire[31:0] ID_Imm_2; //ID_Imm * 2
     //EX Stage
     wire[31:0] EX_instruction;
     wire[2:0] EX_ALUOp;
@@ -63,25 +72,31 @@ module CPU
     wire WB_MemtoReg;
     wire[31:0] WB_writedata;
 
-    assign pc_write = 1'b1;
+    MUX2 Select_pc_source(
+        .data1_i(pc_plus_four),
+        .data2_i(Branch_pc),
+        .select_i(Flush),
+        .data_o(next_pc)
+    );
+
     assign four = 32'd4;
     PC PC(
         .clk_i(clk_i),
         .rst_i(rst_i),
         .start_i(start_i),
         .PCWrite_i(pc_write),
-        .pc_i(old_pc),
-        .pc_o(new_pc)
+        .pc_i(next_pc),
+        .pc_o(IF_pc)
     );
 
     Adder Add_PC(
-        .data1_in(new_pc),
+        .data1_in(IF_pc),
         .data2_in(four),
-        .data_o(old_pc)
+        .data_o(pc_plus_four)
     );
 
     Instruction_Memory Instruction_Memory(
-        .addr_i(new_pc),
+        .addr_i(IF_pc),
         .instr_o(IF_instruction)
     );
 
@@ -89,17 +104,34 @@ module CPU
         .clk_i(clk_i),
         .rst_i(rst_i),
         .Op_i(IF_instruction),
-        .Op_o(ID_instruction)
+        .Stall_i(Stall),
+        .Flush_i(Flush),
+        .pc_i(IF_pc),
+        .Op_o(ID_instruction),
+        .pc_o(ID_pc)
     );
 
     Control Control(
         .Op_i(ID_instruction),
+        .NoOp_i(NoOp),
         .ALUOp_o(ID_ALUOp),
         .ALUSrc_o(ID_ALUSrc),
         .RegWrite_o(ID_RegWrite),
         .MemtoReg_o(ID_MemtoReg),
         .MemRead_o(ID_MemRead),
-        .MemWrite_o(ID_MemWrite)
+        .MemWrite_o(ID_MemWrite),
+        .Branch_o(Branch_Control)
+    );
+
+    HazardDetectionUnit HazardDetectionUnit(
+        .MemRead_i(EX_MemRead),
+        .ALUSrc_i(EX_ALUSrc),
+        .RDaddr_i(EX_instruction[11:7]),
+        .RS1addr_i(ID_instruction[19:15]),
+        .RS2addr_i(ID_instruction[24:20]),
+        .PCWrite_o(pc_write),
+        .Stall_o(Stall),
+        .NoOp_o(NoOp)
     );
 
     Registers Registers(
@@ -113,9 +145,32 @@ module CPU
         .RS2data_o(ID_rs2data) 
     );
 
+    IsEqual ISEqual(
+        .data1_i(ID_rs1data),
+        .data2_i(ID_rs2data),
+        .result_o(Compare)
+    );
+
+    AndGate AndGate(
+        .input1_i(Branch_Control),
+        .input2_i(Compare),
+        .output_o(Flush)
+    );
+
     ImmGen ImmGen(
         .Op_i(ID_instruction),
         .Imm_o(ID_Imm)
+    );
+
+    LeftShift LeftShift(
+        .data_i(ID_Imm),
+        .data_o(ID_Imm_2)
+    );
+
+    Adder Calculate_Branch_pc(
+        .data1_in(ID_Imm_2),
+        .data2_in(ID_pc),
+        .data_o(Branch_pc)
     );
 
     IDEXRegisters IDEXRegisters(
